@@ -4,11 +4,11 @@ use Illuminate\Support\Facades\Route;
 use Modules\Base\Http\Controllers\Admin\LogController;
 use Modules\Base\Http\Controllers\Admin\MediaLibraryController;
 use Modules\Base\Http\Controllers\Admin\SeoController;
-use Modules\Base\Http\Controllers\Admin\SettingsController;
+use Modules\Base\Http\Controllers\Admin\SiteConfigController;
 
-// Group for Settings Management
+// Group for Website Configurations Management
 Route::middleware('can:Settings Management')->group(function () {
-    Route::resource('settings', SettingsController::class)->only(['index', 'store']);
+    Route::resource('site-configs', SiteConfigController::class)->only(['index', 'store']);
     Route::resource('seo', SeoController::class)->only(['index', 'store']);
 });
 

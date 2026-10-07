@@ -6,7 +6,7 @@ use App;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Module;
-use Modules\Base\Models\Settings;
+use Modules\Base\Models\SiteConfig;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -46,7 +46,7 @@ class HandleInertiaRequests extends Middleware
             'storage_path' => asset('storage').'/',
             'locale' => App::currentLocale(),
             'translations' => $this->getTranslations(),
-            'settings' => Settings::pluck('value', 'key'),
+            'siteConfigs' => SiteConfig::pluck('value', 'key'),
             'auth' => fn () => $request->user()
                 ? $request->user()->only('id', 'name', 'email', 'type')
                 : null,

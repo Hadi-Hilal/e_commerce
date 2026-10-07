@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Base\Repositories\Settings;
+namespace Modules\Base\Repositories\SiteConfig;
 
 use Illuminate\Support\Collection;
 
-interface SettingsRepository
+interface SiteConfigRepository
 {
     public function allKeyValue(): Collection;
 

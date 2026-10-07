@@ -4,7 +4,7 @@ namespace Tests\Feature\Architecture;
 
 use Modules\Base\Repositories\Log\LogRepository;
 use Modules\Base\Repositories\Seo\SeoRepository;
-use Modules\Base\Repositories\Settings\SettingsRepository;
+use Modules\Base\Repositories\SiteConfig\SiteConfigRepository;
 use Modules\Core\Contracts\Flash\FlashMessengerInterface;
 use Modules\Core\Contracts\Translation\TranslatorInterface;
 use Modules\Support\Repositories\ContactForm\ContactFormRepository;
@@ -21,7 +21,7 @@ class ServiceBindingTest extends TestCase
 
     public function test_base_and_support_repositories_resolve_from_container(): void
     {
-        $this->assertInstanceOf(SettingsRepository::class, app(SettingsRepository::class));
+        $this->assertInstanceOf(SiteConfigRepository::class, app(SiteConfigRepository::class));
         $this->assertInstanceOf(SeoRepository::class, app(SeoRepository::class));
         $this->assertInstanceOf(LogRepository::class, app(LogRepository::class));
         $this->assertInstanceOf(SubscriberRepository::class, app(SubscriberRepository::class));

@@ -43,12 +43,12 @@ class DddLiteConventionsTest extends TestCase
     {
         $blogController = file_get_contents(base_path('Modules/Cms/app/Http/Controllers/Admin/BlogController.php'));
         $pageController = file_get_contents(base_path('Modules/Cms/app/Http/Controllers/Admin/PageController.php'));
-        $settingsController = file_get_contents(base_path('Modules/Base/app/Http/Controllers/Admin/SettingsController.php'));
+        $siteConfigController = file_get_contents(base_path('Modules/Base/app/Http/Controllers/Admin/SiteConfigController.php'));
         $seoController = file_get_contents(base_path('Modules/Base/app/Http/Controllers/Admin/SeoController.php'));
 
         $this->assertStringContainsString('BlogApplicationService', $blogController);
         $this->assertStringContainsString('PageApplicationService', $pageController);
-        $this->assertStringContainsString('SettingsApplicationService', $settingsController);
+        $this->assertStringContainsString('SiteConfigApplicationService', $siteConfigController);
         $this->assertStringContainsString('SeoApplicationService', $seoController);
     }
 }

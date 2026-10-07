@@ -1,25 +1,25 @@
 <?php
 
-namespace Modules\Base\Application\Settings;
+namespace Modules\Base\Application\SiteConfig;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use Modules\Base\Repositories\Settings\SettingsRepository;
+use Modules\Base\Repositories\SiteConfig\SiteConfigRepository;
 use Modules\Core\Contracts\Flash\FlashMessengerInterface;
 use Modules\Core\Traits\FileTrait;
 
-class SettingsApplicationService
+class SiteConfigApplicationService
 {
     use FileTrait;
 
     public function __construct(
-        private readonly SettingsRepository $settingsRepository,
+        private readonly SiteConfigRepository $siteConfigRepository,
         private readonly FlashMessengerInterface $flashMessenger
     ) {}
 
     public function allKeyValue(): Collection
     {
-        return $this->settingsRepository->allKeyValue();
+        return $this->siteConfigRepository->allKeyValue();
     }
 
     /**
@@ -30,22 +30,22 @@ class SettingsApplicationService
     public function update(array $images = [], array $data = [], array $mediaPaths = []): void
     {
         foreach ($images as $key => $file) {
-            $oldFile = $this->settingsRepository->get($key);
-            $path = $this->upload($file, 'settings', $key, $oldFile ?: null);
-            $this->settingsRepository->set($key, $path);
+            $oldFile = $this->siteConfigRepository->get($key);
+            $path = $this->upload($file, 'site_configs', $key, $oldFile ?: null);
+            $this->siteConfigRepository->set($key, $path);
         }
 
         foreach ($mediaPaths as $key => $path) {
             if (is_string($path) && trim($path) !== '') {
-                $this->settingsRepository->set((string) $key, trim($path));
+                $this->siteConfigRepository->set((string) $key, trim($path));
             }
         }
 
         foreach ($data as $key => $value) {
-            $this->settingsRepository->set((string) $key, is_scalar($value) ? (string) $value : null);
+            $this->siteConfigRepository->set((string) $key, is_scalar($value) ? (string) $value : null);
         }
 
-        cache()->forget('settings');
+        cache()->forget('site_configs');
         $this->flashMessenger->success();
     }
 }

@@ -8,8 +8,8 @@ use Modules\Base\Repositories\Log\LogModelRepository;
 use Modules\Base\Repositories\Log\LogRepository;
 use Modules\Base\Repositories\Seo\SeoModelRepository;
 use Modules\Base\Repositories\Seo\SeoRepository;
-use Modules\Base\Repositories\Settings\SettingsModelRepository;
-use Modules\Base\Repositories\Settings\SettingsRepository;
+use Modules\Base\Repositories\SiteConfig\SiteConfigModelRepository;
+use Modules\Base\Repositories\SiteConfig\SiteConfigRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 
 class BaseServiceProvider extends ServiceProvider
@@ -112,7 +112,7 @@ class BaseServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
-        $this->app->bind(SettingsRepository::class, SettingsModelRepository::class);
+        $this->app->bind(SiteConfigRepository::class, SiteConfigModelRepository::class);
         $this->app->bind(SeoRepository::class, SeoModelRepository::class);
         $this->app->bind(LogRepository::class, LogModelRepository::class);
     }

@@ -12,14 +12,14 @@
 @endsection
 
 <x-admin-layout>
-    <x-admin.create-card title="Website Configurations" :formUrl="route('admin.settings.store')">
+    <x-admin.create-card title="Website Configurations" :formUrl="route('admin.site-configs.store')">
         <div class="row mb-10">
             <!--begin::Col-->
             <div class="col-xl-3 mb-5">
                 <div class="fs-6 fw-bold mt-2 mb-5">{{__('Transparent Logo')}}</div>
                 <x-admin.image-input
                     name="imgs[white_logo]"
-                    :preview="asset('storage/' . $settings->get('white_logo' ,'default.jpg'))"
+                    :preview="asset('storage/' . $siteConfigs->get('white_logo' ,'default.jpg'))"
                     mediaInputName="imgs_media[white_logo]"/>
                 <!--begin::Hint-->
                 <div class="form-text"> 75px * 150px</div>
@@ -32,7 +32,7 @@
                 <div class="fs-6 fw-bold mt-2 mb-5">{{__('Dark Logo')}}</div>
                 <x-admin.image-input
                     name="imgs[black_logo]"
-                    :preview="asset('storage/' . $settings->get('black_logo' ,'default.jpg'))"
+                    :preview="asset('storage/' . $siteConfigs->get('black_logo' ,'default.jpg'))"
                     mediaInputName="imgs_media[black_logo]"/>
                 <!--begin::Hint-->
                 <div class="form-text"> 238px * 51px</div>
@@ -44,7 +44,7 @@
                 <div class="fs-6 fw-bold mt-2 mb-5">{{__('Meta Image')}}</div>
                 <x-admin.image-input
                     name="imgs[meta_img]"
-                    :preview="asset('storage/' . $settings->get('meta_img' ,'default.jpg'))"
+                    :preview="asset('storage/' . $siteConfigs->get('meta_img' ,'default.jpg'))"
                     mediaInputName="imgs_media[meta_img]"/>
                 <!--begin::Hint-->
                 <div class="form-text"> 600px * 600px</div>
@@ -63,7 +63,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <input type="text" class="form-control form-control-solid" name="data[phone]"
-                       value="{{$settings->get('phone')}}" placeholder="00905234***"/>
+                       value="{{$siteConfigs->get('phone')}}" placeholder="00905234***"/>
             </div>
         </div>
 
@@ -77,7 +77,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <input type="text" class="form-control form-control-solid" name="data[email]"
-                       value="{{$settings->get('email')}}" placeholder="support@example.com"/>
+                       value="{{$siteConfigs->get('email')}}" placeholder="support@example.com"/>
             </div>
         </div>
 
@@ -91,7 +91,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <input type="text" class="form-control form-control-solid" name="data[address]"
-                       value="{{$settings->get('address')}}" placeholder="California, TX 70240"/>
+                       value="{{$siteConfigs->get('address')}}" placeholder="California, TX 70240"/>
             </div>
         </div>
 
@@ -105,7 +105,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <textarea name="data[map]"
-                          class="form-control form-control-solid h-150px">{{$settings->get('map')}}</textarea>
+                          class="form-control form-control-solid h-150px">{{$siteConfigs->get('map')}}</textarea>
             </div>
             <!--begin::Col-->
         </div>
@@ -122,7 +122,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <input type="text" class="form-control form-control-solid" name="data[whatsapp]"
-                       value="{{$settings->get('whatsapp')}}" placeholder="90564xxxxxxx"/>
+                       value="{{$siteConfigs->get('whatsapp')}}" placeholder="90564xxxxxxx"/>
             </div>
         </div>
         <div class="row mb-8">
@@ -135,7 +135,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <input type="text" class="form-control form-control-solid" name="data[facebook]"
-                       value="{{$settings->get('facebook')}}" placeholder="https://www.facebook.com/xxxx"/>
+                       value="{{$siteConfigs->get('facebook')}}" placeholder="https://www.facebook.com/xxxx"/>
             </div>
         </div>
         <div class="row mb-8">
@@ -148,7 +148,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <input type="text" class="form-control form-control-solid" name="data[instagram]"
-                       value="{{$settings->get('instagram')}}" placeholder="https://www.instagram.com/xxxx"/>
+                       value="{{$siteConfigs->get('instagram')}}" placeholder="https://www.instagram.com/xxxx"/>
             </div>
         </div>
         <div class="row mb-8">
@@ -161,7 +161,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <input type="text" class="form-control form-control-solid" name="data[youtube]"
-                       value="{{$settings->get('youtube')}}" placeholder="https://www.youtube.com/xxxx"/>
+                       value="{{$siteConfigs->get('youtube')}}" placeholder="https://www.youtube.com/xxxx"/>
             </div>
         </div>
         <div class="row mb-8">
@@ -174,7 +174,7 @@
             <!--begin::Col-->
             <div class="col-xl-9 fv-row">
                 <input type="text" class="form-control form-control-solid" name="data[twitter]"
-                       value="{{$settings->get('twitter')}}" placeholder="https://www.twitter.com/xxxx"/>
+                       value="{{$siteConfigs->get('twitter')}}" placeholder="https://www.twitter.com/xxxx"/>
             </div>
         </div>
 

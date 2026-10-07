@@ -4,27 +4,27 @@ namespace Modules\Base\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Base\Application\Settings\SettingsApplicationService;
+use Modules\Base\Application\SiteConfig\SiteConfigApplicationService;
 
-class SettingsController extends Controller
+class SiteConfigController extends Controller
 {
-    public function __construct(private readonly SettingsApplicationService $settingsService)
+    public function __construct(private readonly SiteConfigApplicationService $siteConfigService)
     {
-        $this->setActive('settings');
+        $this->setActive('websiteConfigurations');
     }
 
     public function index()
     {
         $this->setActive('websiteConfigurations');
-        $settings = $this->settingsService->allKeyValue();
+        $siteConfigs = $this->siteConfigService->allKeyValue();
 
-        return view('base::admin.settings.index', compact('settings'));
+        return view('base::admin.site_config.index', compact('siteConfigs'));
     }
 
     public function store(Request $request)
     {
         $mediaPaths = (array) $request->input('imgs_media', []);
-        $this->settingsService->update(
+        $this->siteConfigService->update(
             $request->file('imgs', []),
             $request->input('data', []),
             $mediaPaths
