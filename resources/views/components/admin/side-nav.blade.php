@@ -10,14 +10,14 @@
 
 @can('Settings Management')
     <div data-kt-menu-trigger="click"
-         class="menu-item menu-accordion {{ isset($active['websiteConfigurations']) ? 'show hover' : '' }}">
-            <span class="menu-link">
-                <span class="menu-icon">
-                    <i class="bi bi-gear"></i>
-                </span>
-                <span class="menu-title">{{ __('Settings') }}</span>
-                <span class="menu-arrow"></span>
+         class="menu-item menu-accordion {{ isset($active['settings']) ? 'show hover' : '' }}">
+        <span class="menu-link">
+            <span class="menu-icon">
+                <i class="bi bi-gear"></i>
             </span>
+            <span class="menu-title">{{ __('Settings') }}</span>
+            <span class="menu-arrow"></span>
+        </span>
 
 
         <div class="menu-sub menu-sub-accordion {{ isset($active['websiteConfigurations'])  ? 'show' : '' }}">
@@ -46,19 +46,42 @@
 
         </div>
 
+        <div class="menu-sub menu-sub-accordion {{ isset($active['configs'])  ? 'show' : '' }}">
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['apiConfigs']) ? 'active' : '' }}"
+                   href="{{ route('admin.admin-configs.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                    <span class="menu-title">{{ __('API Configs') }}</span>
+                </a>
+            </div>
+
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['currencies']) ? 'active' : '' }}"
+                   href="{{ route('admin.currencies.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                    <span class="menu-title">{{ __('Currencies') }}</span>
+                </a>
+            </div>
+
+        </div>
+
     </div>
 @endcan
 
 @can('CMS Management')
     <div data-kt-menu-trigger="click"
          class="menu-item menu-accordion {{ isset($active['cms']) ? 'show hover' : '' }}">
-            <span class="menu-link">
-                <span class="menu-icon">
-                   <i class="bi bi-intersect"></i>
-                </span>
-                <span class="menu-title">{{ __('CMS') }}</span>
-                <span class="menu-arrow"></span>
+        <span class="menu-link">
+            <span class="menu-icon">
+               <i class="bi bi-intersect"></i>
             </span>
+            <span class="menu-title">{{ __('CMS') }}</span>
+            <span class="menu-arrow"></span>
+        </span>
 
 
         <div class="menu-sub menu-sub-accordion {{ isset($active['pages'])  ? 'show' : '' }}">
@@ -129,16 +152,58 @@
 @endcan
 
 
+@can('Shop Management')
+    <div data-kt-menu-trigger="click"
+         class="menu-item menu-accordion {{ isset($active['shop']) ? 'show hover' : '' }}">
+        <span class="menu-link">
+            <span class="menu-icon">
+               <i class="bi bi-shop"></i>
+            </span>
+            <span class="menu-title">{{ __('Shop') }}</span>
+            <span class="menu-arrow"></span>
+        </span>
+
+
+        <div class="menu-sub menu-sub-accordion {{ isset($active['attributes'])  ? 'show' : '' }}">
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['attributes']) ? 'active' : '' }}"
+                   href="{{ route('admin.attributes.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                        <span class="menu-title">{{ __('Attributes') }}</span>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="menu-sub menu-sub-accordion {{ isset($active['attribute_families'])  ? 'show' : '' }}">
+            <div class="menu-item">
+                <a class="menu-link {{ isset($active['attribute_families']) ? 'active' : '' }}"
+                   href="{{ route('admin.attribute_families.index') }}">
+                            <span class="menu-bullet">
+                                <span class="bullet bullet-dot"></span>
+                            </span>
+                        <span class="menu-title">{{ __('Attribute Families') }}</span>
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+@endcan
+
+
 @can('Support Management')
     <div data-kt-menu-trigger="click"
          class="menu-item menu-accordion {{ isset($active['support']) ? 'show hover' : '' }}">
-            <span class="menu-link">
-                <span class="menu-icon">
-                   <i class="bi bi-headset"></i>
-                </span>
-                <span class="menu-title">{{ __('Support Hub') }}</span>
-                <span class="menu-arrow"></span>
+        <span class="menu-link">
+            <span class="menu-icon">
+               <i class="bi bi-headset"></i>
             </span>
+            <span class="menu-title">{{ __('Support Hub') }}</span>
+            <span class="menu-arrow"></span>
+        </span>
 
         <div class="menu-sub menu-sub-accordion {{ isset($active['contact_forms'])  ? 'show' : '' }}">
             <div class="menu-item">
@@ -173,13 +238,13 @@
 @can('Hr Management')
     <div data-kt-menu-trigger="click"
          class="menu-item menu-accordion {{ isset($active['hr']) ? 'show hover' : '' }}">
-            <span class="menu-link">
-                <span class="menu-icon">
-                    <i class="bi bi-journal-text"></i>
-                </span>
-                <span class="menu-title">{{ __('HR') }}</span>
-                <span class="menu-arrow"></span>
+        <span class="menu-link">
+            <span class="menu-icon">
+                <i class="bi bi-journal-text"></i>
             </span>
+            <span class="menu-title">{{ __('HR') }}</span>
+            <span class="menu-arrow"></span>
+        </span>
 
 
         <div

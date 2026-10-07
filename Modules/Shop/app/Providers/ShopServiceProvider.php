@@ -1,29 +1,22 @@
 <?php
 
-namespace Modules\Base\Providers;
+namespace Modules\Shop\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Modules\Base\Repositories\AdminConfig\AdminConfigModelRepository;
-use Modules\Base\Repositories\AdminConfig\AdminConfigRepository;
-use Modules\Base\Repositories\Currency\CurrencyModelRepository;
-use Modules\Base\Repositories\Currency\CurrencyRepository;
-use Modules\Base\Repositories\Log\LogModelRepository;
-use Modules\Base\Repositories\Log\LogRepository;
-use Modules\Base\Repositories\Seo\SeoModelRepository;
-use Modules\Base\Repositories\Seo\SeoRepository;
-use Modules\Base\Repositories\SiteConfig\SiteConfigModelRepository;
-use Modules\Base\Repositories\SiteConfig\SiteConfigRepository;
-use Modules\Base\Services\FixerCurrencyService;
+use Modules\Shop\Repositories\Attribute\AttributeModelRepository;
+use Modules\Shop\Repositories\Attribute\AttributeRepository;
+use Modules\Shop\Repositories\AttributeFamily\AttributeFamilyModelRepository;
+use Modules\Shop\Repositories\AttributeFamily\AttributeFamilyRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 
-class BaseServiceProvider extends ServiceProvider
+class ShopServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $name = 'Base';
+    protected string $name = 'Shop';
 
-    protected string $nameLower = 'base';
+    protected string $nameLower = 'shop';
 
     /**
      * Boot the application events.
@@ -43,9 +36,7 @@ class BaseServiceProvider extends ServiceProvider
      */
     protected function registerCommands(): void
     {
-        $this->commands([
-            \Modules\Base\Console\Commands\SyncExchangeRatesCommand::class,
-        ]);
+        // $this->commands([]);
     }
 
     /**
@@ -119,12 +110,8 @@ class BaseServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
-        $this->app->bind(SiteConfigRepository::class, SiteConfigModelRepository::class);
-        $this->app->bind(SeoRepository::class, SeoModelRepository::class);
-        $this->app->bind(LogRepository::class, LogModelRepository::class);
-        $this->app->bind(CurrencyRepository::class, CurrencyModelRepository::class);
-        $this->app->bind(AdminConfigRepository::class, AdminConfigModelRepository::class);
-        $this->app->singleton(FixerCurrencyService::class);
+        $this->app->bind(AttributeRepository::class, AttributeModelRepository::class);
+        $this->app->bind(AttributeFamilyRepository::class, AttributeFamilyModelRepository::class);
     }
 
     /**

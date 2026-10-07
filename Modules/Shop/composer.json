@@ -1,0 +1,28 @@
+{
+    "name": "hadi/shop",
+    "description": "Shop module for managing attributes and attribute families",
+    "authors": [
+        {
+            "name": "Hadi Hilal",
+            "email": "hadi-hilal@hotmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Shop\\": "app/",
+            "Modules\\Shop\\Database\\Factories\\": "database/factories/",
+            "Modules\\Shop\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Shop\\Tests\\": "tests/"
+        }
+    }
+}

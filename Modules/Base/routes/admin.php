@@ -1,17 +1,29 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Modules\Base\Http\Controllers\Admin\AdminConfigController;
+use Modules\Base\Http\Controllers\Admin\CurrencyController;
 use Modules\Base\Http\Controllers\Admin\LogController;
 use Modules\Base\Http\Controllers\Admin\MediaLibraryController;
 use Modules\Base\Http\Controllers\Admin\SeoController;
 use Modules\Base\Http\Controllers\Admin\SiteConfigController;
 
-// Group for Website Configurations Management
+// Group for Settings Management
 Route::middleware('can:Settings Management')->group(function () {
     Route::resource('site-configs', SiteConfigController::class)->only(['index', 'store']);
     Route::resource('seo', SeoController::class)->only(['index', 'store']);
+
+    // Currencies
+    Route::resource('currencies', CurrencyController::class)->except(['destroy', 'show']);
+    Route::delete('currencies/deleteMulti', [CurrencyController::class, 'deleteMulti'])->name('currencies.deleteMulti');
+    Route::post('currencies/{currency}/set-default', [CurrencyController::class, 'setDefault'])->name('currencies.setDefault');
+    Route::post('currencies/sync-rates', [CurrencyController::class, 'syncRates'])->name('currencies.syncRates');
+
+    // Admin Configs (API Configs)
+    Route::resource('admin-configs', AdminConfigController::class)->only(['index', 'store']);
 });
 
+// Group for Media Library Management
 Route::middleware('can:Media Library Management')->group(function () {
     Route::get('media-library/list', [MediaLibraryController::class, 'list'])->name('media_library.list');
     Route::post('media-library', [MediaLibraryController::class, 'store'])->name('media_library.store');

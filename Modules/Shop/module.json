@@ -1,0 +1,11 @@
+{
+    "name": "Shop",
+    "alias": "shop",
+    "description": "Shop module for managing attributes and attribute families",
+    "keywords": ["shop", "attributes", "ecommerce"],
+    "priority": 10,
+    "providers": [
+        "Modules\\Shop\\Providers\\ShopServiceProvider"
+    ],
+    "files": []
+}
