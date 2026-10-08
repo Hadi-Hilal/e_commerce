@@ -316,12 +316,49 @@
                 <!--begin::Card body-->
                 <div class="card-body pt-0">
                     <!--begin::Permissions-->
-                    <div class="d-flex flex-column text-gray-600">
-                        @foreach($role->permissions as $permission)
-                            <div class="d-flex align-items-center py-2">
-                                <span class="bullet bg-primary me-3"></span>{{__($permission->name)}}
-                            </div>
-                        @endforeach
+                    <div class="table-responsive">
+                        <table class="table align-middle table-row-dashed fs-6 gy-5">
+                            <tbody class="text-gray-600 fw-bold">
+                            @foreach($organizedPermissions as $sectionKey => $section)
+                                <!-- Section Header -->
+                                <tr class="fw-bolder bg-light">
+                                    <td colspan="2">
+                                        <i class="{{ $section['icon'] }} me-2"></i>
+                                        {{ __($section['label']) }}
+                                    </td>
+                                </tr>
+                                @foreach($section['groups'] as $group)
+                                    <!-- Group Header -->
+                                    <tr class="fw-semibold bg-gray-50">
+                                        <td colspan="2">
+                                            <span class="ms-3 text-muted">{{ __($group['label']) }}</span>
+                                        </td>
+                                    </tr>
+                                    @php
+                                        $actions = ['view', 'create', 'edit', 'delete'];
+                                        $groupPermissions = $group['permissions'];
+                                    @endphp
+                                    @foreach($actions as $action)
+                                        @if(isset($groupPermissions[$action]))
+                                            @php
+                                                $permission = $groupPermissions[$action];
+                                                $isGranted = $role->hasPermissionTo($permission['name']);
+                                            @endphp
+                                            <tr>
+                                                <td class="text-gray-800 ps-5">{{ __($permission['label']) }}</td>
+                                                <td>
+                                                    <span class="badge badge-{{ $isGranted ? 'success' : 'light' }} badge-dot">
+                                                        <i class="{{ $isGranted ? 'bi-check' : 'bi-x' }}"></i>
+                                                        {{ $isGranted ? __('Granted') : __('Not Granted') }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                @endforeach
+                            @endforeach
+                            </tbody>
+                        </table>
                     </div>
                     <!--end::Permissions-->
                 </div>
@@ -402,60 +439,7 @@
                                         <!--begin::Label-->
                                         <label class="fs-5 fw-bolder form-label mb-2">{{__('Role Permissions')}}</label>
                                         <!--end::Label-->
-                                        <!--begin::Table wrapper-->
-                                        <div class="table-responsive">
-                                            <!--begin::Table-->
-                                            <table class="table align-middle table-row-dashed fs-6 gy-5">
-                                                <!--begin::Table body-->
-                                                <tbody class="text-gray-600 fw-bold">
-                                                <!--begin::Table row-->
-                                                <tr>
-                                                    <td class="text-gray-800">{{__('Administrator Access')}}
-                                                        <i class="fas fa-exclamation-circle ms-1 fs-7"
-                                                           data-bs-toggle="tooltip"
-                                                           title="Allows a full access to the system"></i></td>
-                                                    <td>
-                                                        <!--begin::Checkbox-->
-                                                        <label
-                                                            class="form-check form-check-sm form-check-custom form-check-solid me-9">
-                                                            <input class="form-check-input" type="checkbox" value=""
-                                                                   id="kt_roles_select_all"/>
-                                                            <span class="form-check-label"
-                                                                  for="kt_roles_select_all">{{__('Select All')}}</span>
-                                                        </label>
-                                                        <!--end::Checkbox-->
-                                                    </td>
-                                                </tr>
-                                                @foreach($permissions as $permission)
-                                                    <tr>
-                                                        <!--begin::Label-->
-                                                        <td class="text-gray-800">{{__($permission->name)}}</td>
-                                                        <!--end::Label-->
-                                                        <!--begin::Options-->
-                                                        <td>
-                                                            <!--begin::Wrapper-->
-                                                            <div class="d-flex">
-                                                                <!--begin::Checkbox-->
-                                                                <label
-                                                                    class="form-check form-check-sm form-check-custom form-check-solid me-5 me-lg-20">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                           name="permissions[]"
-                                                                           @checked(in_array($permission->id, $role->permissions->pluck('id')->toArray(), true))
-                                                                           value="{{ $permission->name }}"/>
-                                                                </label>
-                                                                <!--end::Checkbox-->
-                                                            </div>
-                                                            <!--end::Wrapper-->
-                                                        </td>
-                                                        <!--end::Options-->
-                                                    </tr>
-                                                @endforeach
-                                                </tbody>
-                                                <!--end::Table body-->
-                                            </table>
-                                            <!--end::Table-->
-                                        </div>
-                                        <!--end::Table wrapper-->
+                                        @include('user::admin.role._permissions_table', ['permissions' => $organizedPermissions, 'rolePermissions' => $role->permissions->pluck('name')->toArray()])
                                     </div>
                                     <!--end::Permissions-->
                                 </div>

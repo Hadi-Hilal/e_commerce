@@ -5,6 +5,7 @@ namespace Modules\User\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\User\Application\Role\RoleManagementApplicationService;
+use Modules\User\Helpers\Permissions;
 use Modules\User\Http\Requests\RoleRequest;
 use Modules\User\Http\Requests\RoleUsersRequest;
 
@@ -20,8 +21,9 @@ class RoleController extends Controller
     {
         $roles = $this->roleService->all();
         $permissions = $this->roleService->permissions();
+        $organizedPermissions = Permissions::groupedBySection();
 
-        return view('user::admin.role.index', compact('roles', 'permissions'));
+        return view('user::admin.role.index', compact('roles', 'permissions', 'organizedPermissions'));
     }
 
     public function store(RoleRequest $request)
@@ -34,10 +36,11 @@ class RoleController extends Controller
     public function show($id)
     {
         $permissions = $this->roleService->permissions();
+        $organizedPermissions = Permissions::groupedBySection();
         $role = $this->roleService->findById($id);
         $users = $this->roleService->availableAdminsWithoutRole($id);
 
-        return view('user::admin.role.show', compact('role', 'users', 'permissions'));
+        return view('user::admin.role.show', compact('role', 'users', 'permissions', 'organizedPermissions'));
     }
 
     public function update(RoleRequest $request, $id)

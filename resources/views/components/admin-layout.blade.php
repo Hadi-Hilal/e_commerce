@@ -174,11 +174,13 @@ Author: Hadi Hilal
                                 <div class="separator my-2"></div>
                                 <!--end::Menu separator-->
 
-                                <div class="menu-item px-5">
-                                    <a href="{{route('admin.profile.edit')}}" class="menu-link px-5">
-                                        {{__('My Profile')}}
-                                    </a>
-                                </div>
+                                <x-can perform="profile.edit">
+                                    <div class="menu-item px-5">
+                                        <a href="{{route('admin.profile.edit')}}" class="menu-link px-5">
+                                            {{__('My Profile')}}
+                                        </a>
+                                    </div>
+                                </x-can>
 
                                 <!--begin::Menu item-->
                                 <div class="menu-item px-5" data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
