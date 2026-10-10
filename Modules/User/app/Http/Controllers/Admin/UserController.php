@@ -4,8 +4,8 @@ namespace Modules\User\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\User\Application\User\UserManagementApplicationService;
 use Modules\User\app\Data\UserData;
+use Modules\User\Application\User\UserManagementApplicationService;
 use Modules\User\Http\Requests\StoreUserRequest;
 
 class UserController extends Controller
@@ -25,7 +25,9 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $userData = UserData::validateAndCreate($request->all());
+        $data = $request->validated();
+        $data['type'] = 'user';
+        $userData = UserData::validateAndCreate($data);
         $this->userService->store($userData);
 
         return redirect()->route('admin.users.index');
@@ -34,7 +36,9 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = $this->userService->find($id);
-        $userData = UserData::validateAndCreate($request->all());
+        $data = $request->all();
+        $data['type'] = 'user';
+        $userData = UserData::validateAndCreate($data);
         $this->userService->update($userData, $user);
 
         return redirect()->route('admin.users.index');

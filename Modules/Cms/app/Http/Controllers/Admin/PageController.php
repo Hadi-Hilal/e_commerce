@@ -81,6 +81,13 @@ class PageController extends Controller
         return redirect()->route('admin.pages.index');
     }
 
+    public function destroy(Page $page): RedirectResponse
+    {
+        $this->pageService->deleteMulti([$page->id]);
+
+        return back();
+    }
+
     /**
      * Remove multiple pages from storage.
      */

@@ -33,8 +33,19 @@ class StoreCategoryRequest extends FormRequest
                 $seo = null;
             } else {
                 $decoded = json_decode($seo, true);
-                $seo = json_last_error() === JSON_ERROR_NONE ? $decoded : $seo;
+                $seo = json_last_error() === JSON_ERROR_NONE && is_array($decoded) ? $decoded : $seo;
             }
+        }
+
+        $metaImage = $this->file('meta_img') ?: $this->input('meta_img_media_path');
+        if ($metaImage !== null && $metaImage !== '') {
+            $seo = is_array($seo) ? $seo : [];
+            $seo['meta_image'] = $metaImage;
+        }
+
+        if ($this->boolean('meta_img_remove') && (is_array($seo) || $seo === null)) {
+            $seo = is_array($seo) ? $seo : [];
+            $seo['_remove_meta_image'] = true;
         }
 
         $this->merge([

@@ -4,11 +4,11 @@ namespace Modules\Shop\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
+use Modules\Core\Http\Requests\DeleteMultiRequest;
 use Modules\Shop\Application\Attribute\AttributeApplicationService;
 use Modules\Shop\Http\Requests\StoreAttributeRequest;
 use Modules\Shop\Http\Requests\UpdateAttributeRequest;
 use Modules\Shop\Models\Attribute;
-use Modules\Core\Http\Requests\DeleteMultiRequest;
 
 class AttributeController extends Controller
 {
@@ -56,6 +56,13 @@ class AttributeController extends Controller
         $this->attributeService->update($attribute, $request->validated(), $updateTranslations);
 
         return redirect()->route('admin.attributes.index');
+    }
+
+    public function destroy(Attribute $attribute): RedirectResponse
+    {
+        $this->attributeService->deleteMulti([$attribute->id]);
+
+        return back();
     }
 
     public function deleteMulti(DeleteMultiRequest $request): RedirectResponse

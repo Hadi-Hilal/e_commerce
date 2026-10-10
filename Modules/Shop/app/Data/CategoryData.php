@@ -4,6 +4,8 @@ namespace Modules\Shop\Data;
 
 use Closure;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 use Spatie\LaravelData\Attributes\Validation\Nullable;
 use Spatie\LaravelData\Attributes\Validation\Required;
 use Spatie\LaravelData\Attributes\Validation\StringType;
@@ -46,6 +48,15 @@ class CategoryData extends Data
             if ($value instanceof UploadedFile) {
                 if (! $value->isValid()) {
                     $fail(__('The :attribute is not a valid file.'));
+
+                    return;
+                }
+
+                $validationData = [];
+                Arr::set($validationData, $attribute, $value);
+
+                if (Validator::make($validationData, [$attribute => ['image']])->fails()) {
+                    $fail(__('The :attribute must be an image.'));
                 }
 
                 return;
@@ -62,6 +73,10 @@ class CategoryData extends Data
             'image' => ['nullable', $imageOrPath],
             'slug' => ['nullable', 'string', 'max:255', 'unique:categories,slug'],
             'seo_data' => ['nullable', 'array'],
+            'seo_data.title' => ['nullable', 'string', 'max:255'],
+            'seo_data.description' => ['nullable', 'string'],
+            'seo_data.keywords' => ['nullable', 'string'],
+            'seo_data.meta_image' => ['nullable', $imageOrPath],
         ];
     }
 

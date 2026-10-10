@@ -17,8 +17,6 @@
         <form method="POST" action="{{route('admin.users.store')}}">
             @csrf
 
-            <input type="hidden" name="type" value="user">
-
             <div class="modal-body">
                 <div class="mb-5">
                     <div class="row">

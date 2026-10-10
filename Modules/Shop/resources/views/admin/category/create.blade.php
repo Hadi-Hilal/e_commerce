@@ -54,13 +54,36 @@
                             <x-admin.image-input name="img"/>
                         </x-admin.form-group>
 
-                        <x-admin.form-group label="SEO Data" name="seo_data"
-                                            helper="Optional JSON: title, description, keywords.">
-                            <textarea name="seo_data"
-                                      id="seo_data"
+                        <x-admin.form-group label="SEO Title" name="seo_data.title">
+                            <input type="text"
+                                   id="seo_title"
+                                   name="seo_data[title]"
+                                   class="form-control form-control-solid"
+                                   value="{{ old('seo_data.title') }}"
+                                   placeholder="{{ __('SEO title') }}"/>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="SEO Description" name="seo_data.description">
+                            <textarea id="seo_description"
+                                      name="seo_data[description]"
                                       class="form-control form-control-solid"
-                                      rows="4"
-                                      placeholder='{"title": "", "description": "", "keywords": ""}'>{{ old('seo_data') }}</textarea>
+                                      rows="3"
+                                      placeholder="{{ __('SEO description') }}">{{ old('seo_data.description') }}</textarea>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="SEO Keywords" name="seo_data.keywords"
+                                            helper="Separate keywords with commas.">
+                            <input type="text"
+                                   id="seo_keywords"
+                                   name="seo_data[keywords]"
+                                   class="form-control form-control-solid"
+                                   value="{{ old('seo_data.keywords') }}"
+                                   placeholder="{{ __('keyword 1, keyword 2, keyword 3') }}"/>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="Meta Image"
+                                            helper="Optional image for search and social media previews.">
+                            <x-admin.image-input name="meta_img"/>
                         </x-admin.form-group>
                     </div>
                 </div>

@@ -19,9 +19,7 @@ Route::middleware('can:profile.edit')->group(function () {
 // HR Management - Roles
 Route::middleware('can:hr.roles.view')->group(function () {
     Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
-    Route::get('roles/create', [RoleController::class, 'create'])->name('roles.create');
     Route::get('roles/{role}', [RoleController::class, 'show'])->name('roles.show');
-    Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
 });
 
 Route::middleware('can:hr.roles.create')->group(function () {
@@ -34,7 +32,6 @@ Route::middleware('can:hr.roles.edit')->group(function () {
 
 Route::middleware('can:hr.roles.delete')->group(function () {
     Route::delete('roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
-    Route::get('roles/delete_role/{id}', [RoleController::class, 'delete_role'])->name('roles.delete_role');
 });
 
 Route::middleware('can:hr.roles.edit')->group(function () {

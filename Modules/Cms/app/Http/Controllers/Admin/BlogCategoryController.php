@@ -64,6 +64,14 @@ class BlogCategoryController extends Controller
         return redirect()->route('admin.blogs_categories.index');
     }
 
+    public function destroy(BlogCategory $blogs_category): RedirectResponse
+    {
+        $this->categoryRepository->deleteMulti([$blogs_category->id]);
+        $this->flashMessenger->success();
+
+        return back();
+    }
+
     public function deleteMulti(DeleteMultiRequest $request): RedirectResponse
     {
         $this->categoryRepository->deleteMulti($request->input('ids'));

@@ -29,6 +29,13 @@ class CategoryApplicationService
     public function store(CategoryData $data): bool
     {
         $payload = $this->toPayload($data);
+        $removeMetaImage = $this->shouldRemoveMetaImage($payload['seo_data'] ?? []);
+        $payload['seo_data'] = $this->resolveSeoImage(
+            $payload['seo_data'] ?? [],
+            (string) ($payload['slug'] ?? uniqid('category_', true)),
+            null,
+            $removeMetaImage
+        );
         $payload['image'] = $this->resolveImagePath(
             $data->image,
             (string) ($payload['slug'] ?? uniqid('category_', true)),
@@ -50,6 +57,15 @@ class CategoryApplicationService
     public function update(Category $category, CategoryData $data): bool
     {
         $payload = $this->toPayload($data);
+        $oldParentId = $category->parent_id;
+        $existingMetaImage = data_get($category->seo_data, 'meta_image');
+        $removeMetaImage = $this->shouldRemoveMetaImage($payload['seo_data'] ?? []);
+        $payload['seo_data'] = $this->resolveSeoImage(
+            $payload['seo_data'] ?? [],
+            (string) ($payload['slug'] ?? $category->slug),
+            $existingMetaImage,
+            $removeMetaImage
+        );
         $payload['image'] = $this->resolveImagePath(
             $data->image,
             (string) ($payload['slug'] ?? $category->slug),
@@ -60,7 +76,11 @@ class CategoryApplicationService
 
         if ($result) {
             $this->flashMessenger->success();
+            if ($removeMetaImage && $existingMetaImage) {
+                $this->deleteFile($existingMetaImage);
+            }
             $this->clearDescendantCache($category->id);
+            $this->clearDescendantCache($oldParentId);
             if ($data->parent_id) {
                 $this->clearDescendantCache($data->parent_id);
             }
@@ -72,28 +92,28 @@ class CategoryApplicationService
     public function delete(int $id): void
     {
         $category = Category::find($id);
-        if ($category && $category->parent_id) {
+        $this->repository->delete($id);
+
+        if ($category) {
+            $this->clearDescendantCache($category->id);
             $this->clearDescendantCache($category->parent_id);
         }
 
-        $this->repository->delete($id);
         $this->flashMessenger->success();
     }
 
     public function deleteMulti(array $ids): bool
     {
-        // Clear cache for parent categories before deletion
         $categories = Category::whereIn('id', $ids)->get(['id', 'parent_id']);
-        foreach ($categories as $category) {
-            if ($category->parent_id) {
-                $this->clearDescendantCache($category->parent_id);
-            }
-        }
 
         $result = (bool) $this->repository->deleteMulti($ids);
 
         if ($result) {
             $this->flashMessenger->success();
+            foreach ($categories as $category) {
+                $this->clearDescendantCache($category->id);
+                $this->clearDescendantCache($category->parent_id);
+            }
         } else {
             $this->flashMessenger->error(__('Cannot delete categories that still have children.'));
         }
@@ -108,7 +128,21 @@ class CategoryApplicationService
 
     public function getTree(?int $attributeFamilyId = null, array $columns = ['*']): Collection
     {
-        return $this->repository->getTree($attributeFamilyId, $columns);
+        $selectedColumns = $columns === ['*']
+            ? $columns
+            : array_values(array_unique(array_merge($columns, ['id', 'parent_id', 'attribute_family_id'])));
+        $query = Category::query()->orderBy('id');
+        if ($attributeFamilyId) {
+            $query->where('attribute_family_id', $attributeFamilyId);
+        }
+        $all = $query->get($selectedColumns);
+        $tree = $all->whereNull('parent_id')->values();
+
+        $childrenByParent = $all->groupBy('parent_id');
+
+        return $tree->each(function (Category $root) use ($childrenByParent) {
+            $this->attachChildren($root, $childrenByParent);
+        });
     }
 
     public function getWithEagerLoading(int $id, array $relations = []): ?Category
@@ -131,16 +165,16 @@ class CategoryApplicationService
 
     public function getAllWithChildren(?int $attributeFamilyId = null): Collection
     {
+        $columns = ['id', 'name', 'slug', 'parent_id', 'attribute_family_id', 'image'];
         $query = Category::query()->orderBy('id');
-
         if ($attributeFamilyId) {
             $query->where('attribute_family_id', $attributeFamilyId);
         }
+        $all = $query->get($columns);
+        $childrenByParent = $all->groupBy('parent_id');
 
-        $all = $query->get(['id', 'name', 'slug', 'parent_id', 'attribute_family_id', 'image']);
-
-        return $all->whereNull('parent_id')->values()->each(function (Category $root) use ($all) {
-            $this->attachChildren($root, $all);
+        return $all->whereNull('parent_id')->values()->each(function (Category $root) use ($childrenByParent) {
+            $this->attachChildren($root, $childrenByParent);
         });
     }
 
@@ -171,15 +205,61 @@ class CategoryApplicationService
         return $this->upload($image, 'categories', $slug, $existingImage);
     }
 
-    private function attachChildren(Category $node, Collection $all): void
+    /**
+     * @param  array<string, mixed>  $seoData
+     * @return array<string, mixed>
+     */
+    private function resolveSeoImage(array $seoData, string $slug, ?string $existingImage): array
     {
-        $children = $all->where('parent_id', $node->id)->values();
-        $node->setRelation('children', $children);
-        $children->each(fn (Category $child) => $this->attachChildren($child, $all));
+        $removeMetaImage = $this->shouldRemoveMetaImage($seoData);
+        unset($seoData['_remove_meta_image']);
+
+        if ($removeMetaImage) {
+            $seoData['meta_image'] = null;
+
+            return $seoData;
+        }
+
+        $metaImage = $seoData['meta_image'] ?? null;
+        if (! $metaImage instanceof UploadedFile && ! is_string($metaImage)) {
+            $metaImage = null;
+        }
+
+        $seoData['meta_image'] = $this->resolveImagePath($metaImage, $slug.'_meta', $existingImage);
+
+        return $seoData;
     }
 
-    private function clearDescendantCache(int $categoryId): void
+    /**
+     * @param  array<string, mixed>  $seoData
+     */
+    private function shouldRemoveMetaImage(array $seoData): bool
     {
-        Cache::forget("category_descendants_{$categoryId}");
+        return filter_var($seoData['_remove_meta_image'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    private function attachChildren(Category $node, Collection $childrenByParent): void
+    {
+        $children = $childrenByParent->get($node->id, collect())->values();
+        $node->setRelation('children', $children);
+        $children->each(fn (Category $child) => $this->attachChildren($child, $childrenByParent));
+    }
+
+    private function clearDescendantCache(?int $categoryId): void
+    {
+        $visited = [];
+        $currentId = $categoryId;
+
+        while ($currentId !== null && (int) $currentId > 0) {
+            $currentId = (int) $currentId;
+
+            if (in_array($currentId, $visited, true)) {
+                break;
+            }
+
+            $visited[] = $currentId;
+            Cache::forget("category_descendants_{$currentId}");
+            $currentId = Category::query()->whereKey($currentId)->value('parent_id');
+        }
     }
 }

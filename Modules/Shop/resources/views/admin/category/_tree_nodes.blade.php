@@ -9,7 +9,7 @@
 <ul class="category-tree">
     @foreach($nodes as $node)
         @php
-            $children = $node->childrenRecursive ?? $node->children ?? collect();
+            $children = $node->relationLoaded('children') ? $node->getRelation('children') : collect();
             $hasChildren = $children->isNotEmpty();
             $isDisabled = in_array($node->id, $disabledIds, true);
             $isSelected = (string) $selected === (string) $node->id;

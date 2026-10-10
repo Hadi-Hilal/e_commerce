@@ -20,6 +20,11 @@ class RoleManagementApplicationService
         return $this->roleRepository->all();
     }
 
+    public function allWithCounts(): Collection
+    {
+        return $this->roleRepository->allWithCounts();
+    }
+
     public function permissions(): Collection
     {
         return $this->roleRepository->permissions();
@@ -28,6 +33,11 @@ class RoleManagementApplicationService
     public function findById(int $id): Role
     {
         return $this->roleRepository->findById($id);
+    }
+
+    public function findByIdWithUserCount(int $id): Role
+    {
+        return $this->roleRepository->findByIdWithUserCount($id);
     }
 
     public function store(string $name, array $permissions): ?Role

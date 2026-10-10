@@ -4,11 +4,11 @@ namespace Modules\Shop\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
+use Modules\Core\Http\Requests\DeleteMultiRequest;
 use Modules\Shop\Application\AttributeFamily\AttributeFamilyApplicationService;
 use Modules\Shop\Http\Requests\StoreAttributeFamilyRequest;
 use Modules\Shop\Http\Requests\UpdateAttributeFamilyRequest;
 use Modules\Shop\Models\AttributeFamily;
-use Modules\Core\Http\Requests\DeleteMultiRequest;
 
 class AttributeFamilyController extends Controller
 {
@@ -63,6 +63,13 @@ class AttributeFamilyController extends Controller
         $this->familyService->update($attribute_family, $request->validated(), $updateTranslations);
 
         return redirect()->route('admin.attribute_families.index');
+    }
+
+    public function destroy(AttributeFamily $attribute_family): RedirectResponse
+    {
+        $this->familyService->deleteMulti([$attribute_family->id]);
+
+        return back();
     }
 
     public function deleteMulti(DeleteMultiRequest $request): RedirectResponse

@@ -4,9 +4,9 @@ namespace Modules\Shop\Repositories\Category;
 
 use Config;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Core\Services\SlugService;
 use Modules\Core\Traits\ExceptionHandlerTrait;
 use Modules\Core\Traits\FileTrait;
@@ -105,10 +105,14 @@ class CategoryModelRepository implements CategoryRepository
     public function delete(int $id): mixed
     {
         return $this->execute(function () use ($id) {
-            $image = Category::whereKey($id)->value('image');
+            $category = Category::query()->find($id);
+            $images = array_filter([
+                $category?->image,
+                data_get($category?->seo_data, 'meta_image'),
+            ]);
             Category::destroy($id);
 
-            if ($image) {
+            foreach ($images as $image) {
                 $this->deleteFile((string) $image);
             }
 
@@ -131,7 +135,16 @@ class CategoryModelRepository implements CategoryRepository
                 return false;
             }
 
-            $images = Category::whereIn('id', $ids)->pluck('image')->filter()->all();
+            $images = Category::query()
+                ->whereIn('id', $ids)
+                ->get(['image', 'seo_data'])
+                ->flatMap(fn (Category $category) => [
+                    $category->image,
+                    data_get($category->seo_data, 'meta_image'),
+                ])
+                ->filter()
+                ->unique()
+                ->all();
             Category::destroy($ids);
 
             foreach ($images as $image) {

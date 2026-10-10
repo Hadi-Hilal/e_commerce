@@ -61,6 +61,13 @@ class CurrencyController extends Controller
         return redirect()->route('admin.currencies.index');
     }
 
+    public function destroy(Currency $currency): RedirectResponse
+    {
+        $this->currencyService->delete($currency);
+
+        return back();
+    }
+
     public function deleteMulti(DeleteMultiRequest $request): RedirectResponse
     {
         $this->currencyService->deleteMulti($request->input('ids'));

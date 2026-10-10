@@ -9,7 +9,11 @@ interface RoleRepository
 {
     public function all(): Collection;
 
+    public function allWithCounts(): Collection;
+
     public function findById(int $id): Role;
+
+    public function findByIdWithUserCount(int $id): Role;
 
     public function permissions(): Collection;
 

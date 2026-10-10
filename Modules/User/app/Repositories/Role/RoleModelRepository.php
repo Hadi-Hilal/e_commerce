@@ -22,6 +22,11 @@ class RoleModelRepository implements RoleRepository
         return Role::all();
     }
 
+    public function allWithCounts(): Collection
+    {
+        return Role::query()->withCount(['users', 'permissions'])->get();
+    }
+
     public function store(string $name, array $permissions): ?Role
     {
         return $this->execute(function () use ($name, $permissions) {
@@ -46,6 +51,11 @@ class RoleModelRepository implements RoleRepository
     public function findById(int $id): Role
     {
         return Role::findOrFail($id);
+    }
+
+    public function findByIdWithUserCount(int $id): Role
+    {
+        return Role::query()->withCount('users')->findOrFail($id);
     }
 
     public function delete(int $id): bool

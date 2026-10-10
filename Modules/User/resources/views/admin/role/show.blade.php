@@ -11,9 +11,11 @@
     @endphp
     <x-admin.breadcrumb :pageTitle="__('Roles')" :breadcrumbItems="$breadcrumbItems"/>
     <div class="d-flex align-items-center gap-2 gap-lg-3">
-        <a class="btn btn-sm btn-danger fw-bold" href="{{route('admin.roles.delete_role' , $role->id)}}">
-            {{__('Delete Role')}}
-        </a>
+        <form method="POST" action="{{route('admin.roles.destroy', $role->id)}}">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-sm btn-danger fw-bold">{{__('Delete Role')}}</button>
+        </form>
     </div>
 
 @endsection
@@ -478,7 +480,7 @@
                     <!--begin::Card title-->
                     <div class="card-title">
                         <h2 class="d-flex align-items-center">{{__('Users Assigned')}}
-                            <span class="text-gray-600 fs-6 ms-1">({{$role->users()->count()}})</span></h2>
+                            <span class="text-gray-600 fs-6 ms-1">({{$role->users_count}})</span></h2>
                     </div>
                     <!--end::Card title-->
                     <!--begin::Card toolbar-->
@@ -645,5 +647,3 @@
 
     </div>
 </x-admin-layout>
-
-

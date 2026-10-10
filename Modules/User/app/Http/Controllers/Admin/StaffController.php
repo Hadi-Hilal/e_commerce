@@ -4,9 +4,9 @@ namespace Modules\User\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\User\app\Data\UserData;
 use Modules\User\Application\Role\RoleManagementApplicationService;
 use Modules\User\Application\User\UserManagementApplicationService;
-use Modules\User\app\Data\UserData;
 use Modules\User\Http\Requests\StoreUserRequest;
 
 class StaffController extends Controller
@@ -14,8 +14,7 @@ class StaffController extends Controller
     public function __construct(
         protected UserManagementApplicationService $userService,
         protected RoleManagementApplicationService $roleService
-    )
-    {
+    ) {
         $this->setActive('hr');
         $this->setActive('staffs');
     }
@@ -30,7 +29,9 @@ class StaffController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $userData = UserData::validateAndCreate($request->all());
+        $data = $request->validated();
+        $data['type'] = 'admin';
+        $userData = UserData::validateAndCreate($data);
         $user = $this->userService->store($userData);
         $this->roleService->assignUsersToRole($request->input('role_id'), [$user->id]);
 
@@ -39,7 +40,9 @@ class StaffController extends Controller
 
     public function update(Request $request, $id)
     {
-        $userData = UserData::validateAndCreate($request->all());
+        $data = $request->all();
+        $data['type'] = 'admin';
+        $userData = UserData::validateAndCreate($data);
         $user = $this->userService->find($id);
         $this->userService->update($userData, $user);
 

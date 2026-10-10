@@ -136,11 +136,11 @@
                     <div class="card-body pt-1">
                         <!--begin::Users-->
                         <div
-                            class="fw-bolder text-gray-600 mb-5">{{__('Total Users With This Role')}} {{ $role->users()->count() }}</div>
+                            class="fw-bolder text-gray-600 mb-5">{{__('Total Users With This Role')}} {{ $role->users_count }}</div>
                         <!--end::Users-->
                         <!--begin::Users-->
                         <div
-                            class="fw-bolder text-gray-600 mb-5">{{__('Total Permissions With This Role')}} {{ $role->permissions()->count() }}</div>
+                            class="fw-bolder text-gray-600 mb-5">{{__('Total Permissions With This Role')}} {{ $role->permissions_count }}</div>
                         <!--end::Users-->
                     </div>
                     <!--end::Card body-->

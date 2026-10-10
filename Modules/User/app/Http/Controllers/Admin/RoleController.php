@@ -19,7 +19,7 @@ class RoleController extends Controller
 
     public function index()
     {
-        $roles = $this->roleService->all();
+        $roles = $this->roleService->allWithCounts();
         $permissions = $this->roleService->permissions();
         $organizedPermissions = Permissions::groupedBySection();
 
@@ -37,7 +37,7 @@ class RoleController extends Controller
     {
         $permissions = $this->roleService->permissions();
         $organizedPermissions = Permissions::groupedBySection();
-        $role = $this->roleService->findById($id);
+        $role = $this->roleService->findByIdWithUserCount($id);
         $users = $this->roleService->availableAdminsWithoutRole($id);
 
         return view('user::admin.role.show', compact('role', 'users', 'permissions', 'organizedPermissions'));
@@ -50,7 +50,7 @@ class RoleController extends Controller
         return back();
     }
 
-    public function delete_role($id)
+    public function destroy($id)
     {
         $this->roleService->delete($id);
 

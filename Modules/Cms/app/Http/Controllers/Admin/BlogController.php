@@ -69,6 +69,13 @@ class BlogController extends Controller
         return redirect()->route('admin.blogs.index');
     }
 
+    public function destroy(Blog $blog): RedirectResponse
+    {
+        $this->blogService->deleteMulti([$blog->id]);
+
+        return back();
+    }
+
     public function deleteMulti(DeleteMultiRequest $request): RedirectResponse
     {
         $this->blogService->deleteMulti($request->input('ids'));

@@ -61,6 +61,13 @@ class FaqController extends Controller
         return redirect()->route('admin.faqs.index');
     }
 
+    public function destroy(Faq $faq): RedirectResponse
+    {
+        $this->faqService->deleteMulti([$faq->id]);
+
+        return back();
+    }
+
     public function deleteMulti(DeleteMultiRequest $request): RedirectResponse
     {
         $this->faqService->deleteMulti($request->input('ids'));
