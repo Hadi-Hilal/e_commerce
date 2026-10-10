@@ -3,6 +3,7 @@
 namespace Modules\Base\Repositories\Currency;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Modules\Base\Models\Currency;
 
@@ -60,7 +61,10 @@ class CurrencyModelRepository implements CurrencyRepository
     {
         // If this is set as default, unset other defaults
         if (! empty($data['is_default'])) {
-            Currency::where('is_default', true)->update(['is_default' => false]);
+            return DB::transaction(function () use ($data) {
+                Currency::where('is_default', true)->update(['is_default' => false]);
+                return Currency::create($data);
+            });
         }
 
         return Currency::create($data);
@@ -70,7 +74,11 @@ class CurrencyModelRepository implements CurrencyRepository
     {
         // If this is set as default, unset other defaults
         if (! empty($data['is_default']) && ! $currency->is_default) {
-            Currency::where('is_default', true)->where('id', '!=', $currency->id)->update(['is_default' => false]);
+            return DB::transaction(function () use ($currency, $data) {
+                Currency::where('is_default', true)->where('id', '!=', $currency->id)->update(['is_default' => false]);
+                $currency->update($data);
+                return $currency->fresh();
+            });
         }
 
         $currency->update($data);

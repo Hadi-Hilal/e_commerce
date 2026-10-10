@@ -37,8 +37,7 @@ class AttributeModelRepository implements AttributeRepository
     {
         return $this->execute(function () use ($data) {
             $attributeData = $this->prepareAttributeData($data);
-            Attribute::create($attributeData);
-            session()->flushMessage(true);
+            return Attribute::create($attributeData);
         });
     }
 
@@ -91,7 +90,6 @@ class AttributeModelRepository implements AttributeRepository
         return $this->execute(function () use ($data, $attribute, $updateTranslations) {
             $attributeData = $this->prepareAttributeData($data, $attribute, $updateTranslations);
             $attribute->update($attributeData);
-            session()->flushMessage(true);
             return true;
         });
     }
@@ -100,7 +98,6 @@ class AttributeModelRepository implements AttributeRepository
     {
         return $this->execute(function () use ($ids) {
             Attribute::destroy($ids);
-            session()->flushMessage(true);
             return true;
         });
     }

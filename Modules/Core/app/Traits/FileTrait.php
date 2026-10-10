@@ -4,7 +4,7 @@ namespace Modules\Core\Traits;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 trait FileTrait
@@ -38,8 +38,8 @@ trait FileTrait
             return Storage::disk($disk)->putFileAs($dir, $file, $filename);
         }
 
-        // Process and upload image
-        $image = Image::read($file);
+        // Bypass Image facade: Laravel 13 owns the "image" container binding.
+        $image = ImageManager::gd()->read($file);
         if ($width) {
             $image->resize($width);
         }
@@ -59,9 +59,26 @@ trait FileTrait
             return false;
         }
 
+        // Validate file size (max 10MB)
+        $maxSize = config('core.max_file_size', 10 * 1024 * 1024);
+        if ($file->getSize() > $maxSize) {
+            session()->flushMessage(false, __('File size exceeds maximum allowed size.'));
+
+            return false;
+        }
+
         $allowedMimeTypes = config('core.allowed_mime_types');
         if (! in_array($file->getMimeType(), $allowedMimeTypes, true)) {
             session()->flushMessage(false, __('File type is not allowed.'));
+
+            return false;
+        }
+
+        // Additional validation: check actual file content
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $actualMimeType = $finfo->file($file->getPathname());
+        if (! in_array($actualMimeType, $allowedMimeTypes, true)) {
+            session()->flushMessage(false, __('File type does not match content.'));
 
             return false;
         }

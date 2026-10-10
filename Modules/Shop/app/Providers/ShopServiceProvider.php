@@ -8,6 +8,8 @@ use Modules\Shop\Repositories\Attribute\AttributeModelRepository;
 use Modules\Shop\Repositories\Attribute\AttributeRepository;
 use Modules\Shop\Repositories\AttributeFamily\AttributeFamilyModelRepository;
 use Modules\Shop\Repositories\AttributeFamily\AttributeFamilyRepository;
+use Modules\Shop\Repositories\Category\CategoryModelRepository;
+use Modules\Shop\Repositories\Category\CategoryRepository;
 use Nwidart\Modules\Traits\PathNamespace;
 
 class ShopServiceProvider extends ServiceProvider
@@ -112,6 +114,7 @@ class ShopServiceProvider extends ServiceProvider
         $this->app->register(RouteServiceProvider::class);
         $this->app->bind(AttributeRepository::class, AttributeModelRepository::class);
         $this->app->bind(AttributeFamilyRepository::class, AttributeFamilyModelRepository::class);
+        $this->app->bind(CategoryRepository::class, CategoryModelRepository::class);
     }
 
     /**

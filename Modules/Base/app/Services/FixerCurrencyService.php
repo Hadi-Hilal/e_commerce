@@ -13,14 +13,19 @@ class FixerCurrencyService
 {
     private const BASE_URL = 'https://data.fixer.io/api/';
 
-    private string $apiKey;
-
-    private string $baseCurrency;
-
     public function __construct()
     {
-        $this->apiKey = AdminConfig::get('api_key', null, 'fixer_api');
-        $this->baseCurrency = AdminConfig::get('base_currency', 'USD', 'fixer_api');
+        // Lazy load configuration to allow changes without recreating service
+    }
+
+    private function getApiKey(): string
+    {
+        return AdminConfig::get('api_key', null, 'fixer_api');
+    }
+
+    private function getBaseCurrency(): string
+    {
+        return AdminConfig::get('base_currency', 'USD', 'fixer_api');
     }
 
     /**
@@ -28,7 +33,7 @@ class FixerCurrencyService
      */
     public function setApiKey(string $apiKey): self
     {
-        $this->apiKey = $apiKey;
+        AdminConfig::set('api_key', $apiKey, 'fixer_api');
 
         return $this;
     }
@@ -38,7 +43,7 @@ class FixerCurrencyService
      */
     public function setBaseCurrency(string $baseCurrency): self
     {
-        $this->baseCurrency = $baseCurrency;
+        AdminConfig::set('base_currency', $baseCurrency, 'fixer_api');
 
         return $this;
     }
@@ -48,7 +53,7 @@ class FixerCurrencyService
      */
     public function isConfigured(): bool
     {
-        return ! empty($this->apiKey);
+        return ! empty($this->getApiKey());
     }
 
     /**
@@ -61,8 +66,8 @@ class FixerCurrencyService
         }
 
         $response = $this->makeRequest('latest', [
-            'access_key' => $this->apiKey,
-            'base' => $this->baseCurrency,
+            'access_key' => $this->getApiKey(),
+            'base' => $this->getBaseCurrency(),
         ]);
 
         if (! $response->successful()) {
@@ -91,7 +96,7 @@ class FixerCurrencyService
         }
 
         $response = $this->makeRequest('symbols', [
-            'access_key' => $this->apiKey,
+            'access_key' => $this->getApiKey(),
         ]);
 
         if (! $response->successful()) {
@@ -119,11 +124,12 @@ class FixerCurrencyService
         $errors = [];
 
         // Ensure base currency exists with rate 1.0
+        $baseCurrencyCode = $this->getBaseCurrency();
         $baseCurrency = Currency::firstOrCreate(
-            ['code' => $this->baseCurrency],
+            ['code' => $baseCurrencyCode],
             [
-                'name' => $symbols[$this->baseCurrency]['description'] ?? $this->baseCurrency,
-                'symbol' => $symbols[$this->baseCurrency]['symbol'] ?? $this->baseCurrency,
+                'name' => $symbols[$baseCurrencyCode]['description'] ?? $baseCurrencyCode,
+                'symbol' => $symbols[$baseCurrencyCode]['symbol'] ?? $baseCurrencyCode,
                 'exchange_rate' => 1.0,
                 'is_default' => true,
                 'is_active' => true,
@@ -134,28 +140,31 @@ class FixerCurrencyService
             $baseCurrency->setAsDefault();
         }
 
-        $synced[$this->baseCurrency] = 1.0;
+        $synced[$baseCurrencyCode] = 1.0;
+
+        // First, get all existing currency codes in a single query
+        $existingCurrencies = Currency::pluck('code', 'id')->flip()->toArray();
 
         foreach ($rates as $code => $rate) {
-            if ($code === $this->baseCurrency) {
+            if ($code === $baseCurrencyCode) {
                 continue;
             }
 
             try {
-                $currency = Currency::firstOrCreate(
-                    ['code' => $code],
-                    [
-                        'name' => $symbols[$code]['description'] ?? $code,
-                        'symbol' => $symbols[$code]['symbol'] ?? $code,
-                        'exchange_rate' => $rate,
-                        'is_default' => false,
-                        'is_active' => true,
-                    ]
-                );
+                $currencyData = [
+                    'name' => $symbols[$code]['description'] ?? $code,
+                    'symbol' => $symbols[$code]['symbol'] ?? $code,
+                    'exchange_rate' => $rate,
+                    'is_default' => false,
+                    'is_active' => true,
+                ];
 
-                // Update exchange rate if currency exists
-                if (! $currency->wasRecentlyCreated) {
-                    $currency->update(['exchange_rate' => $rate]);
+                if (isset($existingCurrencies[$code])) {
+                    // Update existing currency
+                    Currency::where('code', $code)->update(['exchange_rate' => $rate]);
+                } else {
+                    // Create new currency
+                    Currency::create(array_merge($currencyData, ['code' => $code]));
                 }
 
                 $synced[$code] = $rate;
@@ -168,7 +177,7 @@ class FixerCurrencyService
         return [
             'synced' => $synced,
             'errors' => $errors,
-            'base_currency' => $this->baseCurrency,
+            'base_currency' => $baseCurrencyCode,
             'count' => count($synced),
         ];
     }

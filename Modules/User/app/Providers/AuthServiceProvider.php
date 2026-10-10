@@ -32,6 +32,10 @@ class AuthServiceProvider extends ServiceProvider
 
         // Register Gate::before for backward compatibility with broad permissions
         Gate::before(function ($user, $ability) {
+            if (!method_exists($user, 'getAllPermissions')) {
+                return null;
+            }
+
             // Map broad permissions to granular ones
             $broadToGranular = [
                 'Settings Management' => [
@@ -59,6 +63,10 @@ class AuthServiceProvider extends ServiceProvider
                     'cms.pages.create',
                     'cms.pages.edit',
                     'cms.pages.delete',
+                    'cms.slides.view',
+                    'cms.slides.create',
+                    'cms.slides.edit',
+                    'cms.slides.delete',
                     'cms.blog-categories.view',
                     'cms.blog-categories.create',
                     'cms.blog-categories.edit',
@@ -84,10 +92,18 @@ class AuthServiceProvider extends ServiceProvider
                     'shop.attributes.create',
                     'shop.attributes.edit',
                     'shop.attributes.delete',
+                    'shop.attribute_families.view',
+                    'shop.attribute_families.create',
+                    'shop.attribute_families.edit',
+                    'shop.attribute_families.delete',
                     'shop.attribute-families.view',
                     'shop.attribute-families.create',
                     'shop.attribute-families.edit',
                     'shop.attribute-families.delete',
+                    'shop.categories.view',
+                    'shop.categories.create',
+                    'shop.categories.edit',
+                    'shop.categories.delete',
                 ],
                 'Support Management' => [
                     'support.view',
@@ -124,10 +140,25 @@ class AuthServiceProvider extends ServiceProvider
                 ],
             ];
 
-            // Check if the ability is a granular permission that can be implied by a broad permission
+            try {
+                $userPermissions = $user->getAllPermissions()->pluck('name')->toArray();
+            } catch (\Throwable $e) {
+                return null;
+            }
+
+            // Check if user has broad permission when checking granular permission
             foreach ($broadToGranular as $broadPermission => $granularPermissions) {
-                if (in_array($ability, $granularPermissions) && $user->can($broadPermission)) {
+                if (in_array($ability, $granularPermissions, true) && in_array($broadPermission, $userPermissions, true)) {
                     return true;
+                }
+            }
+
+            // Also check if user has any granular permission under a broad permission when checking broad permission
+            if (isset($broadToGranular[$ability])) {
+                foreach ($broadToGranular[$ability] as $granularPermission) {
+                    if (in_array($granularPermission, $userPermissions, true)) {
+                        return true;
+                    }
                 }
             }
 

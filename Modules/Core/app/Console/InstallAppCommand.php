@@ -141,6 +141,10 @@ class InstallAppCommand extends Command
                 'cms.pages.create',
                 'cms.pages.edit',
                 'cms.pages.delete',
+                'cms.slides.view',
+                'cms.slides.create',
+                'cms.slides.edit',
+                'cms.slides.delete',
                 'cms.blog-categories.view',
                 'cms.blog-categories.create',
                 'cms.blog-categories.edit',
@@ -170,6 +174,10 @@ class InstallAppCommand extends Command
                 'shop.attribute-families.create',
                 'shop.attribute-families.edit',
                 'shop.attribute-families.delete',
+                'shop.categories.view',
+                'shop.categories.create',
+                'shop.categories.edit',
+                'shop.categories.delete',
 
                 // Support Management
                 'support.view',

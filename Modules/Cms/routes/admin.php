@@ -5,6 +5,7 @@ use Modules\Cms\Http\Controllers\Admin\BlogCategoryController;
 use Modules\Cms\Http\Controllers\Admin\BlogController;
 use Modules\Cms\Http\Controllers\Admin\FaqController;
 use Modules\Cms\Http\Controllers\Admin\PageController;
+use Modules\Cms\Http\Controllers\Admin\SlideController;
 
 // Pages
 Route::middleware('can:cms.pages.view')->group(function () {
@@ -84,4 +85,22 @@ Route::middleware('can:cms.faqs.edit')->group(function () {
 Route::middleware('can:cms.faqs.delete')->group(function () {
     Route::delete('faqs/{faq}', [FaqController::class, 'destroy'])->name('faqs.destroy');
     Route::delete('faqs/deleteMulti', [FaqController::class, 'deleteMulti'])->name('faqs.deleteMulti');
+});
+
+Route::middleware('can:cms.slides.view')->group(function () {
+    Route::get('slides', [SlideController::class, 'index'])->name('slides.index');
+    Route::get('slides/create', [SlideController::class, 'create'])->name('slides.create');
+    Route::get('slides/{slide}/edit', [SlideController::class, 'edit'])->name('slides.edit');
+});
+
+Route::middleware('can:cms.slides.create')->group(function () {
+    Route::post('slides', [SlideController::class, 'store'])->name('slides.store');
+});
+
+Route::middleware('can:cms.slides.edit')->group(function () {
+    Route::put('slides/{slide}', [SlideController::class, 'update'])->name('slides.update');
+});
+
+Route::middleware('can:cms.slides.delete')->group(function () {
+    Route::delete('slides/deleteMulti', [SlideController::class, 'deleteMulti'])->name('slides.deleteMulti');
 });

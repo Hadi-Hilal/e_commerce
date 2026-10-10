@@ -4,6 +4,7 @@ namespace Modules\Base\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 
 class Currency extends Model
 {
@@ -53,7 +54,9 @@ class Currency extends Model
      */
     public function setAsDefault(): void
     {
-        static::where('is_default', true)->update(['is_default' => false]);
-        $this->update(['is_default' => true]);
+        DB::transaction(function () {
+            static::where('is_default', true)->update(['is_default' => false]);
+            $this->update(['is_default' => true]);
+        });
     }
 }

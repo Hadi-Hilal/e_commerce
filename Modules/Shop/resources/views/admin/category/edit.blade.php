@@ -1,0 +1,119 @@
+@section('title', __('Edit Category'))
+
+@section('toolbar')
+    @php
+        $breadcrumbItems = [
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard.index')],
+            ['label' => 'Shop'],
+            ['label' => 'Categories', 'url' => route('admin.categories.index')],
+            ['label' => 'Edit Category'],
+        ];
+    @endphp
+    <x-admin.breadcrumb :pageTitle="__('Edit Category')" :breadcrumbItems="$breadcrumbItems"/>
+@endsection
+
+<x-admin-layout>
+    <form method="POST" action="{{ route('admin.categories.update', $category) }}" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        <div class="row gx-5 gx-xl-10">
+            <div class="col-xxl-8 col-xl-8 mb-5 mb-xl-0">
+                <div class="card card-flush mb-7">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="d-flex align-items-center">
+                                <i class="bi bi-tags text-primary fs-3 me-2"></i>
+                                {{ __('General') }}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <x-admin.form-group label="Name" name="name" required translatable
+                                            helper="Display name for the category.">
+                            <input type="text"
+                                   id="name"
+                                   name="name"
+                                   class="form-control form-control-solid"
+                                   value="{{ old('name', $category->name) }}"
+                                   required
+                                   placeholder="{{ __('Category name') }}"/>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="Slug" name="slug" required
+                                            helper="A short label containing only letters, numbers, and hyphens.">
+                            <input type="text"
+                                   id="slug"
+                                   name="slug"
+                                   class="form-control form-control-solid"
+                                   value="{{ old('slug', $category->slug) }}"
+                                   required
+                                   placeholder="category-slug"/>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="Image"
+                                            helper="Leave blank to keep the current image.">
+                            <x-admin.image-input name="img" :preview="$category->image_link"/>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="SEO Data" name="seo_data"
+                                            helper="Optional JSON: title, description, keywords.">
+                            <textarea name="seo_data"
+                                      id="seo_data"
+                                      class="form-control form-control-solid"
+                                      rows="4"
+                                      placeholder='{"title": "", "description": "", "keywords": ""}'>{{ old('seo_data', $category->seo_data ? json_encode($category->seo_data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) : '') }}</textarea>
+                        </x-admin.form-group>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xxl-4 col-xl-4">
+                <div class="card card-flush mb-7">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2 class="d-flex align-items-center">
+                                <i class="bi bi-diagram-3 text-primary fs-3 me-2"></i>
+                                {{ __('Organization') }}
+                            </h2>
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <x-admin.form-group label="Attribute Family" name="attribute_family_id" required>
+                            <select name="attribute_family_id"
+                                    id="attribute_family_id"
+                                    class="form-select form-select-solid"
+                                    required>
+                                <option value="">{{ __('Select Attribute Family') }}</option>
+                                @foreach($attributeFamilies as $family)
+                                    <option value="{{ $family->id }}"
+                                        @selected((string) old('attribute_family_id', $category->attribute_family_id) === (string) $family->id)>
+                                        {{ $family->name[$locale] ?? $family->name['en'] ?? $family->code }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </x-admin.form-group>
+
+                        <x-admin.form-group label="Parent Category" name="parent_id"
+                                            helper="Select a parent from the tree. The current category and its children are disabled.">
+                            @include('shop::admin.category._parent_tree', [
+                                'tree' => $tree,
+                                'selected' => old('parent_id', $category->parent_id),
+                                'disabledIds' => $disabledIds ?? [$category->id],
+                                'familyFilter' => old('attribute_family_id', $category->attribute_family_id),
+                            ])
+                        </x-admin.form-group>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end py-6">
+            <a href="{{ route('admin.categories.index') }}"
+               class="btn btn-light btn-active-light-primary me-3">{{ __('Discard') }}</a>
+            <button type="submit" class="btn btn-primary">
+                <span class="indicator-label">{{ __('Save Changes') }}</span>
+            </button>
+        </div>
+    </form>
+</x-admin-layout>

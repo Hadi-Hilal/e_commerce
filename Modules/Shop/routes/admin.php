@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Shop\Http\Controllers\Admin\AttributeController;
 use Modules\Shop\Http\Controllers\Admin\AttributeFamilyController;
+use Modules\Shop\Http\Controllers\Admin\CategoryController;
 
 // Attributes
 Route::middleware('can:shop.attributes.view')->group(function () {
@@ -42,4 +43,24 @@ Route::middleware('can:shop.attribute-families.edit')->group(function () {
 Route::middleware('can:shop.attribute-families.delete')->group(function () {
     Route::delete('attribute_families/{attribute_family}', [AttributeFamilyController::class, 'destroy'])->name('attribute_families.destroy');
     Route::delete('attribute_families/deleteMulti', [AttributeFamilyController::class, 'deleteMulti'])->name('attribute_families.deleteMulti');
+});
+
+// Categories
+Route::middleware('can:shop.categories.view')->group(function () {
+    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::get('categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+});
+
+Route::middleware('can:shop.categories.create')->group(function () {
+    Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
+});
+
+Route::middleware('can:shop.categories.edit')->group(function () {
+    Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+});
+
+Route::middleware('can:shop.categories.delete')->group(function () {
+    Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    Route::delete('categories/deleteMulti', [CategoryController::class, 'deleteMulti'])->name('categories.deleteMulti');
 });

@@ -53,6 +53,10 @@ class Permissions
                     ['name' => 'cms.pages.create', 'label' => 'Pages - Create', 'action' => 'create', 'group' => 'Pages'],
                     ['name' => 'cms.pages.edit', 'label' => 'Pages - Edit', 'action' => 'edit', 'group' => 'Pages'],
                     ['name' => 'cms.pages.delete', 'label' => 'Pages - Delete', 'action' => 'delete', 'group' => 'Pages'],
+                    ['name' => 'cms.slides.view', 'label' => 'Slides - View', 'action' => 'view', 'group' => 'Slides'],
+                    ['name' => 'cms.slides.create', 'label' => 'Slides - Create', 'action' => 'create', 'group' => 'Slides'],
+                    ['name' => 'cms.slides.edit', 'label' => 'Slides - Edit', 'action' => 'edit', 'group' => 'Slides'],
+                    ['name' => 'cms.slides.delete', 'label' => 'Slides - Delete', 'action' => 'delete', 'group' => 'Slides'],
                     ['name' => 'cms.blog-categories.view', 'label' => 'Blog Categories - View', 'action' => 'view', 'group' => 'Blog Categories'],
                     ['name' => 'cms.blog-categories.create', 'label' => 'Blog Categories - Create', 'action' => 'create', 'group' => 'Blog Categories'],
                     ['name' => 'cms.blog-categories.edit', 'label' => 'Blog Categories - Edit', 'action' => 'edit', 'group' => 'Blog Categories'],
@@ -90,6 +94,10 @@ class Permissions
                     ['name' => 'shop.attribute-families.create', 'label' => 'Attribute Families - Create', 'action' => 'create', 'group' => 'Attribute Families'],
                     ['name' => 'shop.attribute-families.edit', 'label' => 'Attribute Families - Edit', 'action' => 'edit', 'group' => 'Attribute Families'],
                     ['name' => 'shop.attribute-families.delete', 'label' => 'Attribute Families - Delete', 'action' => 'delete', 'group' => 'Attribute Families'],
+                    ['name' => 'shop.categories.view', 'label' => 'Categories - View', 'action' => 'view', 'group' => 'Categories'],
+                    ['name' => 'shop.categories.create', 'label' => 'Categories - Create', 'action' => 'create', 'group' => 'Categories'],
+                    ['name' => 'shop.categories.edit', 'label' => 'Categories - Edit', 'action' => 'edit', 'group' => 'Categories'],
+                    ['name' => 'shop.categories.delete', 'label' => 'Categories - Delete', 'action' => 'delete', 'group' => 'Categories'],
                 ],
             ],
             'support' => [
@@ -164,25 +172,25 @@ class Permissions
 
         foreach ($organized as $sectionKey => $section) {
             $groups = [];
-            
+
             foreach ($section['permissions'] as $permission) {
                 $groupName = $permission['group'] ?? $section['label'];
                 $action = $permission['action'];
-                
+
                 if (!isset($groups[$groupName])) {
                     $groups[$groupName] = [
                         'label' => $groupName,
                         'permissions' => [],
                     ];
                 }
-                
+
                 $groups[$groupName]['permissions'][$action] = [
                     'name' => $permission['name'],
                     'label' => $permission['label'],
                     'action' => $action,
                 ];
             }
-            
+
             $result[$sectionKey] = [
                 'label' => $section['label'],
                 'icon' => $section['icon'],
@@ -202,11 +210,11 @@ class Permissions
     public static function getSectionPermissions(string $section): array
     {
         $organized = self::organized();
-        
+
         if (!isset($organized[$section])) {
             return [];
         }
-        
+
         return array_column($organized[$section]['permissions'], 'name');
     }
 

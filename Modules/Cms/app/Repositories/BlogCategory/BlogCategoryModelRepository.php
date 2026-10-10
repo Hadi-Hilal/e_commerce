@@ -23,8 +23,7 @@ class BlogCategoryModelRepository implements BlogCategoryRepository {
     public function store(array $data): mixed {
         return $this->execute(function () use ($data) {
             $categoryData = $this->prepareCategoryData($data);
-            BlogCategory::create($categoryData);
-            session()->flushMessage(true);
+            return BlogCategory::create($categoryData);
         });
     }
 
@@ -69,7 +68,6 @@ class BlogCategoryModelRepository implements BlogCategoryRepository {
         return $this->execute(function () use ($data, $category, $updateTranslations) {
             $categoryData = $this->prepareCategoryData($data, $category, $updateTranslations);
             $category->update($categoryData);
-            session()->flushMessage(true);
             return true;
         });
     }
@@ -79,7 +77,6 @@ class BlogCategoryModelRepository implements BlogCategoryRepository {
             // If BlogCategory ever has images/files, delete them here (structure for extensibility)
             BlogCategory::destroy($ids);
             // Optionally clear cache or handle related cleanup here
-            session()->flushMessage(true);
             return true;
         });
     }

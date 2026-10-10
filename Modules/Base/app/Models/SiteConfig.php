@@ -3,6 +3,7 @@
 namespace Modules\Base\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class SiteConfig extends Model
 {
@@ -30,7 +31,9 @@ class SiteConfig extends Model
     protected static function loadSiteConfigCache()
     {
         if (is_null(self::$siteConfigCache)) {
-            self::$siteConfigCache = self::all()->keyBy('key');
+            self::$siteConfigCache = Cache::remember('site_configs_cache', now()->addHours(6), function () {
+                return self::all()->keyBy('key');
+            });
         }
     }
 
@@ -53,6 +56,17 @@ class SiteConfig extends Model
             $model->update(['value' => $value]);
         }
 
+        Cache::forget('site_configs_cache');
+
         return true;
+    }
+
+    /**
+     * Clear the cache.
+     */
+    public static function clearCache(): void
+    {
+        self::$siteConfigCache = null;
+        Cache::forget('site_configs_cache');
     }
 }

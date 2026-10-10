@@ -86,8 +86,10 @@ class AdminConfig extends Model
     protected static function loadAdminConfigCache(): void
     {
         if (is_null(self::$adminConfigCache) && self::tableExists()) {
-            self::$adminConfigCache = self::all()->keyBy(function ($config) {
-                return $config->group ? "{$config->group}.{$config->key}" : $config->key;
+            self::$adminConfigCache = Cache::remember('admin_configs_cache', now()->addHours(6), function () {
+                return self::all()->keyBy(function ($config) {
+                    return $config->group ? "{$config->group}.{$config->key}" : $config->key;
+                });
             });
         }
     }
@@ -143,5 +145,6 @@ class AdminConfig extends Model
     {
         self::$adminConfigCache = null;
         Cache::forget('admin_configs');
+        Cache::forget('admin_configs_cache');
     }
 }

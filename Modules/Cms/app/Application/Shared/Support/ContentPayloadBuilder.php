@@ -51,11 +51,29 @@ class ContentPayloadBuilder
             $translations[$locale] = $value;
 
             if ($updateTranslations && $value !== '') {
-                foreach ($this->translator->otherLanguages() as $language) {
-                    try {
-                        $translations[$language] = $this->translator->translate($language, $value);
-                    } catch (Exception $exception) {
-                        Log::error($exception->getMessage());
+                if ($entity) {
+                    // Dispatch translation job to queue for existing entities
+                    \App\Jobs\TranslateContentJob::dispatch(
+                        $entity->id,
+                        get_class($entity),
+                        $field,
+                        $value,
+                        $this->translator->otherLanguages()
+                    );
+
+                    // Set placeholder translations that will be updated by the job
+                    foreach ($this->translator->otherLanguages() as $language) {
+                        $translations[$language] = $value; // Temporary fallback
+                    }
+                } else {
+                    // For new entities, still do synchronous translation (can be improved later)
+                    foreach ($this->translator->otherLanguages() as $language) {
+                        try {
+                            $translations[$language] = $this->translator->translate($language, $value);
+                        } catch (Exception $exception) {
+                            Log::error($exception->getMessage());
+                            $translations[$language] = $value; // Fallback on error
+                        }
                     }
                 }
             }

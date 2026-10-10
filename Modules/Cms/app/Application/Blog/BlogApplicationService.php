@@ -62,7 +62,7 @@ class BlogApplicationService
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, BlogCategory>
      */
-    public function categories()
+    public function categories(): \Illuminate\Database\Eloquent\Collection
     {
         return BlogCategory::query()->get();
     }

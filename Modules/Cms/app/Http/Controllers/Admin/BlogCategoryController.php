@@ -7,14 +7,17 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Modules\Cms\Models\BlogCategory;
 use Modules\Cms\Repositories\BlogCategory\BlogCategoryRepository;
+use Modules\Core\Contracts\Flash\FlashMessengerInterface;
 use Modules\Core\Http\Requests\DeleteMultiRequest;
 
 class BlogCategoryController extends Controller
 {
     protected BlogCategoryRepository $categoryRepository;
 
-    public function __construct(BlogCategoryRepository $categoryRepository)
-    {
+    public function __construct(
+        BlogCategoryRepository $categoryRepository,
+        private readonly FlashMessengerInterface $flashMessenger
+    ) {
         $this->categoryRepository = $categoryRepository;
         $this->setActive('cms');
         $this->setActive('blogs_categories');
@@ -39,6 +42,7 @@ class BlogCategoryController extends Controller
             'slug' => $request->input('slug'),
         ];
         $this->categoryRepository->store($data);
+        $this->flashMessenger->success();
 
         return redirect()->route('admin.blogs_categories.index');
     }
@@ -55,6 +59,7 @@ class BlogCategoryController extends Controller
             'slug' => $blogs_category->slug,
         ];
         $this->categoryRepository->update($data, $blogs_category, $request->boolean('update_translations'));
+        $this->flashMessenger->success();
 
         return redirect()->route('admin.blogs_categories.index');
     }
@@ -62,6 +67,7 @@ class BlogCategoryController extends Controller
     public function deleteMulti(DeleteMultiRequest $request): RedirectResponse
     {
         $this->categoryRepository->deleteMulti($request->input('ids'));
+        $this->flashMessenger->success();
 
         return back();
     }

@@ -14,7 +14,9 @@ class BlogModelRepository implements BlogRepository
 
     public function all(array $columns = ['*'], array $filters = []): LengthAwarePaginator
     {
-        return Blog::select($columns)->latest()
+        return Blog::select($columns)
+            ->with(['category:id,name,slug'])
+            ->latest()
             ->when(isset($filters['publish']) && $filters['publish'] !== null && $filters['publish'] !== '',
                 fn ($q) => $q->where('status', $filters['publish']))
             ->paginate(Config::get('core.page_size', 10));

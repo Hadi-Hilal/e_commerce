@@ -44,7 +44,7 @@ class AttributeFamilyModelRepository implements AttributeFamilyRepository
                 $this->syncAttributes($family, $data['attribute_ids']);
             }
 
-            session()->flushMessage(true);
+            return $family;
         });
     }
 
@@ -105,7 +105,6 @@ class AttributeFamilyModelRepository implements AttributeFamilyRepository
                 $this->syncAttributes($family, $data['attribute_ids']);
             }
 
-            session()->flushMessage(true);
             return true;
         });
     }
@@ -114,7 +113,6 @@ class AttributeFamilyModelRepository implements AttributeFamilyRepository
     {
         return $this->execute(function () use ($ids) {
             AttributeFamily::destroy($ids);
-            session()->flushMessage(true);
             return true;
         });
     }
